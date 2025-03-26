@@ -7,7 +7,7 @@ import {
   FileText, 
   Code, 
   HelpCircle, 
-  UserVoice, 
+  MessageSquare, // Replacing UserVoice with MessageSquare
   User, 
   Settings, 
   LogOut, 
@@ -77,7 +77,7 @@ export function Sidebar({ className }: SidebarProps) {
         { 
           name: "Mock Interviews", 
           href: "/interviews", 
-          icon: <UserVoice className="mr-3 h-5 w-5" />,
+          icon: <MessageSquare className="mr-3 h-5 w-5" />,
           active: location === "/interviews"
         }
       ]
