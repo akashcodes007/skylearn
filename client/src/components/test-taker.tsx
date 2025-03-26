@@ -267,7 +267,7 @@ export function TestTaker({ test, onClose, onComplete }: TestTakerProps) {
           <div>
             <CardTitle className="text-xl">{test.title}</CardTitle>
             <div className="flex items-center gap-2 mt-1">
-              <Badge variant={test.type === "MCQ" ? "warning" : "accent"}>
+              <Badge variant={test.type === "MCQ" ? "default" : "secondary"}>
                 {test.type}
               </Badge>
               <span className="text-sm text-muted-foreground">

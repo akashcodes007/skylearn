@@ -38,7 +38,15 @@ export function UpcomingCard({
   onScheduleNew
 }: UpcomingCardProps) {
   // Format date as "Tomorrow, 2:00 PM" or "Friday, 11:00 AM"
-  const formatScheduledDate = (date: Date) => {
+  const formatScheduledDate = (scheduledDate: Date) => {
+    // Ensure we have a valid Date object
+    const date = scheduledDate instanceof Date ? scheduledDate : new Date(scheduledDate);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return 'Date not available';
+    }
+    
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -91,7 +99,7 @@ export function UpcomingCard({
                     </Badge>
                   ) : (
                     <Badge 
-                      variant={item.testType === 'MCQ' ? 'warning' : 'accent'}
+                      variant={item.testType === 'MCQ' ? 'default' : 'secondary'}
                     >
                       {item.testType}
                     </Badge>
