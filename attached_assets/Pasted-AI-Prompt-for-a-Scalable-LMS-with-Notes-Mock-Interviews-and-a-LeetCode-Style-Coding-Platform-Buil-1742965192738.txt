@@ -1,0 +1,88 @@
+AI Prompt for a Scalable LMS with Notes, Mock Interviews, and a LeetCode-Style Coding Platform
+"Build a highly scalable Learning Management System (LMS) that serves as an all-in-one platform for students, educators, and interview preparation. The LMS should integrate advanced features, including AI-generated notes, mock interview scheduling, and a fully interactive coding platform similar to LeetCode. The system should support both MCQ-based and coding-based assessments, allowing both admins and users to create and upload tests. The platform should be designed for high concurrency and optimized for performance to handle thousands of students simultaneously."
+
+Core Features & Functionalities:
+1. AI-Generated Notes & Study Materials
+AI automatically generates structured notes from uploaded PDFs, videos, or teacher input.
+
+Students can search for topics, and AI provides contextual summaries and explanations.
+
+AI-powered question generation from notes for self-assessment.
+
+Supports multimedia (text, images, videos, and interactive diagrams).
+
+Version control for updated notes by teachers/admins.
+
+2. Mock Interview Scheduling System
+AI-driven scheduling assistant that allows students to book mock interviews.
+
+Live interview environment with a video call + AI-powered interviewer bot.
+
+AI evaluates performance and provides detailed feedback with confidence scores, strengths & weaknesses, and improvement suggestions.
+
+Supports both technical (DSA, system design) and behavioral (HR) interviews.
+
+Option for human interviewers (pro) who are assigned dynamically.
+
+3. Coding Platform (LeetCode-Style)
+Fully integrated coding environment where students can practice DSA, system design, and competitive programming.
+
+Real-time code execution with support for multiple languages (C++, Python, Java, JavaScript, etc.).
+
+AI-powered hints & explanations for coding questions.
+
+Time & space complexity analysis for submitted solutions.
+
+Live contests & leaderboards for competitive programming.
+
+4. Customizable MCQ & Coding-Based Tests
+Admins or users can upload and schedule tests.
+
+Multiple question formats: MCQs, coding challenges, fill-in-the-blanks, and descriptive answers.
+
+Automated test evaluation: AI grades MCQs instantly and runs test cases for coding challenges.
+
+Cheat detection system that tracks tab-switching, face detection (via webcam), and AI-generated answer detection.
+
+Ranking system for students based on test performance.
+
+5. Scalability & Performance
+Cloud-based infrastructure (AWS, GCP, or Azure) to handle large concurrent users.
+
+Load balancing & caching for faster response times.
+
+Optimized database design (NoSQL + SQL hybrid) to manage high-volume user data.
+
+CDN integration for fast content delivery of study materials, videos, and notes.
+
+AI-powered recommendation system for personalized learning paths.
+
+6. User Roles & Access Control
+Students: Access to notes, tests, mock interviews, and coding practice.
+
+Admins/Teachers: Create & upload content, track student progress, schedule tests & interviews.
+
+Interviewers (AI/Human): Conduct interviews and provide feedback.
+
+7. Gamification & Progress Tracking
+Badges, achievements, and streaks for student motivation.
+
+AI-powered insights on strengths, weaknesses, and suggested learning plans.
+
+Leaderboard & peer competition to encourage engagement.
+
+Tech Stack Recommendation for High Scalability:
+✅ Frontend: React.js / Next.js (for fast, interactive UI)
+✅ Backend: Node.js / Python (FastAPI) with GraphQL for data fetching
+✅ Database: PostgreSQL + MongoDB (Hybrid for structured & unstructured data)
+✅ Cloud Storage: AWS S3 for notes, test files, and videos
+✅ AI Services: OpenAI API / Custom NLP for note summarization, AI interviewer
+✅ Code Execution Engine: Dockerized execution using Kubernetes for scalability
+✅ Auth & Security: JWT-based authentication, OAuth for Google sign-in
+✅ CI/CD Pipeline: Docker + Kubernetes + GitHub Actions for automated deployments
+
+Monetization Model (For Scaling as a Business)
+💰 Freemium Model: Free access to notes & practice tests; paid for advanced features.
+💰 Premium Subscription: ₹999/month for mock interviews, AI-generated insights.
+💰 Enterprise Plan: Universities and coaching institutes pay for bulk student access.
+💰 One-time Test Upload Fees: ₹199/test for custom test creation by third parties.
