@@ -436,36 +436,22 @@ public:
           <div className="w-[55%] flex flex-col">
             {/* Language tabs */}
             <div className="border-b p-2 flex">
-              <TabsList>
-                <TabsTrigger 
-                  value="python"
-                  className={language === "python" ? "bg-primary text-primary-foreground" : ""}
-                  onClick={() => setLanguage("python")}
-                >
-                  Python
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="javascript"
-                  className={language === "javascript" ? "bg-primary text-primary-foreground" : ""}
-                  onClick={() => setLanguage("javascript")}
-                >
-                  JavaScript
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="java"
-                  className={language === "java" ? "bg-primary text-primary-foreground" : ""}
-                  onClick={() => setLanguage("java")}
-                >
-                  Java
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="cpp"
-                  className={language === "cpp" ? "bg-primary text-primary-foreground" : ""}
-                  onClick={() => setLanguage("cpp")}
-                >
-                  C++
-                </TabsTrigger>
-              </TabsList>
+              <Tabs value={language} onValueChange={setLanguage}>
+                <TabsList>
+                  <TabsTrigger value="python">
+                    Python
+                  </TabsTrigger>
+                  <TabsTrigger value="javascript">
+                    JavaScript
+                  </TabsTrigger>
+                  <TabsTrigger value="java">
+                    Java
+                  </TabsTrigger>
+                  <TabsTrigger value="cpp">
+                    C++
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
             
             {/* Code editor */}
@@ -482,15 +468,14 @@ public:
             {(output || analysis || runResults) && (
               <div className="border-t bg-muted h-64 overflow-y-auto flex flex-col">
                 <div className="border-b p-2 flex">
-                  <TabsList>
-                    <TabsTrigger 
-                      value="results"
-                      className="bg-primary text-primary-foreground"
-                    >
-                      <Terminal className="h-4 w-4 mr-2" />
-                      Test Results
-                    </TabsTrigger>
-                  </TabsList>
+                  <Tabs defaultValue="results">
+                    <TabsList>
+                      <TabsTrigger value="results">
+                        <Terminal className="h-4 w-4 mr-2" />
+                        Test Results
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
                 
                 <div className="flex-1 p-3 overflow-y-auto">
