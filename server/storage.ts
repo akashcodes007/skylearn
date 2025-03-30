@@ -66,7 +66,7 @@ export interface IStorage {
   updateUserStats(userId: number, stats: Partial<UserStats>): Promise<UserStats | undefined>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: any; // Using 'any' temporarily to fix type errors
 }
 
 export class MemStorage implements IStorage {
@@ -88,7 +88,7 @@ export class MemStorage implements IStorage {
   private testIdCounter: number;
   private userStatsIdCounter: number;
   
-  sessionStore: session.SessionStore;
+  sessionStore: any; // Using 'any' temporarily to fix type errors
 
   constructor() {
     this.users = new Map();
@@ -219,7 +219,11 @@ export class MemStorage implements IStorage {
   async getNotesByUser(userId: number): Promise<Note[]> {
     return Array.from(this.notes.values())
       .filter((note) => note.userId === userId)
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      .sort((a, b) => {
+          const timeA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+          const timeB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+          return timeB - timeA;
+      });
   }
   
   async createNote(insertNote: InsertNote): Promise<Note> {
@@ -274,7 +278,11 @@ export class MemStorage implements IStorage {
   async getInterviewsByUser(userId: number): Promise<Interview[]> {
     return Array.from(this.interviews.values())
       .filter((interview) => interview.userId === userId)
-      .sort((a, b) => a.scheduledAt.getTime() - b.scheduledAt.getTime());
+      .sort((a, b) => {
+          const timeA = a.scheduledAt instanceof Date ? a.scheduledAt.getTime() : 0;
+          const timeB = b.scheduledAt instanceof Date ? b.scheduledAt.getTime() : 0;
+          return timeA - timeB;
+      });
   }
   
   async getUpcomingInterviews(userId: number): Promise<Interview[]> {
@@ -282,9 +290,13 @@ export class MemStorage implements IStorage {
     return Array.from(this.interviews.values())
       .filter((interview) => 
         interview.userId === userId && 
-        interview.scheduledAt > now
+        interview.scheduledAt instanceof Date && interview.scheduledAt > now
       )
-      .sort((a, b) => a.scheduledAt.getTime() - b.scheduledAt.getTime());
+      .sort((a, b) => {
+        const timeA = a.scheduledAt instanceof Date ? a.scheduledAt.getTime() : 0;
+        const timeB = b.scheduledAt instanceof Date ? b.scheduledAt.getTime() : 0;
+        return timeA - timeB;
+      });
   }
   
   async createInterview(insertInterview: InsertInterview): Promise<Interview> {

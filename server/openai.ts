@@ -1,148 +1,170 @@
-import OpenAI from "openai";
+import OpenAI from 'openai';
+import config from './config/config';
 
+// Initialize OpenAI API client
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || "demo-api-key-for-dev" 
+  apiKey: config.openai.apiKey || process.env.OPENAI_API_KEY 
 });
 
-// Generate notes from text content
+/**
+ * Generate notes from text
+ * 
+ * Uses OpenAI to generate structured study notes from text
+ */
 export async function generateNotesFromText(text: string, options: {
-  format: string,
-  complexity: string,
-  generateQuestions: boolean
-}) {
+  format?: 'markdown' | 'html',
+  style?: 'concise' | 'detailed',
+  focusAreas?: string[]
+} = {}) {
   try {
-    // Build system prompt based on options
-    let systemPrompt = `You are an expert educator creating structured learning notes. 
-Format the notes in ${options.format} format at a ${options.complexity} level.
-Include key concepts, explanations, and examples.`;
-
-    if (options.generateQuestions) {
-      systemPrompt += " Also include 3-5 practice questions with answers at the end.";
+    const { format = 'markdown', style = 'concise', focusAreas = [] } = options;
+    
+    let prompt = `Generate ${style} study notes from the following text:\n\n${text}\n\n`;
+    
+    if (focusAreas.length > 0) {
+      prompt += `Focus on these specific areas: ${focusAreas.join(', ')}\n\n`;
     }
-
+    
+    prompt += `Output format: ${format === 'markdown' ? 'Markdown' : 'HTML'}`;
+    
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: `Please generate educational notes from the following content:\n\n${text}`
-        }
-      ],
-      temperature: 0.7,
+      model: config.openai.model,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.5,
       max_tokens: 2000
     });
-
-    return response.choices[0].message.content;
+    
+    const content = response.choices[0].message.content || '';
+    return {
+      content,
+      format
+    };
   } catch (error) {
-    console.error("Error generating notes:", error);
-    throw new Error("Failed to generate notes. Please try again later.");
+    console.error('Error generating notes from text:', error);
+    throw new Error('Failed to generate notes');
   }
 }
 
-// Analyze student code submission
+/**
+ * Analyze code submission
+ * 
+ * Uses OpenAI to analyze code submissions and provide feedback
+ */
 export async function analyzeCodeSubmission(
-  code: string, 
-  language: string, 
+  code: string,
+  language: string,
   problemStatement: string
 ) {
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [
-        {
-          role: "system",
-          content: `You are a code reviewer analyzing a student's submission. 
-Provide feedback on:
-1. Correctness of the solution
-2. Time and space complexity analysis
-3. Code quality and readability
-4. Potential optimizations
-Respond in JSON format with these keys: correctness (boolean), timeComplexity (string), spaceComplexity (string), feedback (string), optimizations (array of strings).`
-        },
-        {
-          role: "user",
-          content: `Problem statement: ${problemStatement}\n\nLanguage: ${language}\n\nCode submission:\n\`\`\`${language}\n${code}\n\`\`\``
-        }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.3,
-    });
+    const prompt = `
+You are a coding expert analyzing a submission for the following problem:
 
-    return JSON.parse(response.choices[0].message.content);
+${problemStatement}
+
+Here is the code in ${language}:
+
+\`\`\`${language}
+${code}
+\`\`\`
+
+Analyze this code and provide feedback in JSON format:
+1. Correctness: Is the code likely to work? Are there any logical errors?
+2. Efficiency: Analyze time and space complexity. Could it be optimized?
+3. Code Style: Is the code well-structured and following best practices?
+4. Potential Issues: Any edge cases or bugs that might occur?
+5. Improvements: Specific suggestions to improve the solution.
+
+Respond with a JSON object with these keys.
+`;
+
+    const response = await openai.chat.completions.create({
+      model: config.openai.model,
+      messages: [{ role: 'user', content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.3
+    });
+    
+    const content = response.choices[0].message.content;
+    return content ? JSON.parse(content) : { error: 'Empty response from OpenAI' };
   } catch (error) {
-    console.error("Error analyzing code:", error);
-    throw new Error("Failed to analyze code submission. Please try again later.");
+    console.error('Error analyzing code submission:', error);
+    throw new Error('Failed to analyze code');
   }
 }
 
-// Generate AI interviewer questions for mock interviews
+/**
+ * Generate interview questions
+ * 
+ * Uses OpenAI to generate mock interview questions
+ */
 export async function generateInterviewQuestions(
-  interviewType: string, 
-  difficulty: string
+  topic: string,
+  difficulty: string,
+  count: number = 5
 ) {
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert technical interviewer. Generate a set of interview questions for a ${difficulty} level ${interviewType} interview.
-Each question should include:
-1. The question text
-2. Expected response points
-3. Follow-up questions if needed
-4. Evaluation criteria
-Respond in JSON format with an array of question objects.`
-        },
-        {
-          role: "user",
-          content: `Please generate 5 interview questions for a ${difficulty} level ${interviewType} interview.`
-        }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-    });
+    const prompt = `
+Generate ${count} ${difficulty} level interview questions about ${topic}.
 
-    return JSON.parse(response.choices[0].message.content);
+For each question, include:
+1. The question itself
+2. Expected answer
+3. Follow-up questions or hints
+4. Key points to look for in the response
+
+Return the response as a JSON array of question objects.
+`;
+
+    const response = await openai.chat.completions.create({
+      model: config.openai.model,
+      messages: [{ role: 'user', content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.7
+    });
+    
+    const content = response.choices[0].message.content;
+    return content ? JSON.parse(content) : { error: 'Empty response from OpenAI' };
   } catch (error) {
-    console.error("Error generating interview questions:", error);
-    throw new Error("Failed to generate interview questions. Please try again later.");
+    console.error('Error generating interview questions:', error);
+    throw new Error('Failed to generate interview questions');
   }
 }
 
-// Generate MCQ questions for tests
+/**
+ * Generate MCQ questions
+ * 
+ * Uses OpenAI to generate multiple choice questions for tests
+ */
 export async function generateMCQQuestions(topic: string, count: number) {
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert educator creating multiple-choice questions. 
-Create ${count} questions about ${topic}.
-Each question should have 4 options with one correct answer.
-Respond in JSON format with an array of question objects, where each object has:
-- question: the question text
-- options: array of 4 option strings
-- correctIndex: index of the correct option (0-3)
-- explanation: brief explanation of the correct answer`
-        },
-        {
-          role: "user",
-          content: `Generate ${count} multiple-choice questions about ${topic}.`
-        }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-    });
+    const prompt = `
+Generate ${count} multiple-choice questions about ${topic}.
 
-    return JSON.parse(response.choices[0].message.content);
+For each question:
+1. Include the question text
+2. Provide 4 options (A, B, C, D)
+3. Indicate the correct answer
+4. Include a brief explanation of why the answer is correct
+
+Return the response as a JSON array of question objects with these properties:
+- id: (number)
+- text: (string) the question text
+- options: (array) of 4 answer options
+- correctAnswerId: (number) the index of the correct answer (0-3)
+- explanation: (string) brief explanation of the correct answer
+`;
+
+    const response = await openai.chat.completions.create({
+      model: config.openai.model,
+      messages: [{ role: 'user', content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.7
+    });
+    
+    const content = response.choices[0].message.content;
+    return content ? JSON.parse(content) : { error: 'Empty response from OpenAI' };
   } catch (error) {
-    console.error("Error generating MCQ questions:", error);
-    throw new Error("Failed to generate questions. Please try again later.");
+    console.error('Error generating MCQ questions:', error);
+    throw new Error('Failed to generate MCQ questions');
   }
 }
