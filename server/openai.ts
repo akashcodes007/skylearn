@@ -39,9 +39,29 @@ export async function generateNotesFromText(text: string, options: {
       content,
       format
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error generating notes from text:', error);
-    throw new Error('Failed to generate notes');
+    
+    // Handle OpenAI specific errors
+    if (typeof error === 'object' && error !== null) {
+      // Handle rate limit errors
+      if ('status' in error && error.status === 429) {
+        throw new Error('OpenAI rate limit exceeded. Please try again later.');
+      }
+      
+      // Handle quota exceeded errors
+      if ('code' in error && error.code === 'insufficient_quota') {
+        throw new Error('OpenAI API quota exceeded. Please check your billing details.');
+      }
+      
+      // Handle other errors with message
+      if ('message' in error && typeof error.message === 'string') {
+        throw new Error('Failed to generate notes: ' + error.message);
+      }
+    }
+    
+    // Fallback for unknown errors
+    throw new Error('Failed to generate notes: Unknown error');
   }
 }
 
@@ -86,9 +106,29 @@ Respond with a JSON object with these keys.
     
     const content = response.choices[0].message.content;
     return content ? JSON.parse(content) : { error: 'Empty response from OpenAI' };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error analyzing code submission:', error);
-    throw new Error('Failed to analyze code');
+    
+    // Handle OpenAI specific errors
+    if (typeof error === 'object' && error !== null) {
+      // Handle rate limit errors
+      if ('status' in error && error.status === 429) {
+        throw new Error('OpenAI rate limit exceeded. Please try again later.');
+      }
+      
+      // Handle quota exceeded errors
+      if ('code' in error && error.code === 'insufficient_quota') {
+        throw new Error('OpenAI API quota exceeded. Please check your billing details.');
+      }
+      
+      // Handle other errors with message
+      if ('message' in error && typeof error.message === 'string') {
+        throw new Error('Failed to analyze code: ' + error.message);
+      }
+    }
+    
+    // Fallback for unknown errors
+    throw new Error('Failed to analyze code: Unknown error');
   }
 }
 
@@ -124,9 +164,29 @@ Return the response as a JSON array of question objects.
     
     const content = response.choices[0].message.content;
     return content ? JSON.parse(content) : { error: 'Empty response from OpenAI' };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error generating interview questions:', error);
-    throw new Error('Failed to generate interview questions');
+    
+    // Handle OpenAI specific errors
+    if (typeof error === 'object' && error !== null) {
+      // Handle rate limit errors
+      if ('status' in error && error.status === 429) {
+        throw new Error('OpenAI rate limit exceeded. Please try again later.');
+      }
+      
+      // Handle quota exceeded errors
+      if ('code' in error && error.code === 'insufficient_quota') {
+        throw new Error('OpenAI API quota exceeded. Please check your billing details.');
+      }
+      
+      // Handle other errors with message
+      if ('message' in error && typeof error.message === 'string') {
+        throw new Error('Failed to generate interview questions: ' + error.message);
+      }
+    }
+    
+    // Fallback for unknown errors
+    throw new Error('Failed to generate interview questions: Unknown error');
   }
 }
 
@@ -163,8 +223,28 @@ Return the response as a JSON array of question objects with these properties:
     
     const content = response.choices[0].message.content;
     return content ? JSON.parse(content) : { error: 'Empty response from OpenAI' };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error generating MCQ questions:', error);
-    throw new Error('Failed to generate MCQ questions');
+    
+    // Handle OpenAI specific errors
+    if (typeof error === 'object' && error !== null) {
+      // Handle rate limit errors
+      if ('status' in error && error.status === 429) {
+        throw new Error('OpenAI rate limit exceeded. Please try again later.');
+      }
+      
+      // Handle quota exceeded errors
+      if ('code' in error && error.code === 'insufficient_quota') {
+        throw new Error('OpenAI API quota exceeded. Please check your billing details.');
+      }
+      
+      // Handle other errors with message
+      if ('message' in error && typeof error.message === 'string') {
+        throw new Error('Failed to generate MCQ questions: ' + error.message);
+      }
+    }
+    
+    // Fallback for unknown errors
+    throw new Error('Failed to generate MCQ questions: Unknown error');
   }
 }

@@ -204,9 +204,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(generatedContent);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      // Check for specific error types
+      if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+        return res.status(429).json({ 
+          message: "OpenAI API rate limit exceeded", 
+          error: errorMessage 
+        });
+      }
+      
+      if (errorMessage.includes('quota exceeded') || errorMessage.includes('insufficient_quota')) {
+        return res.status(402).json({ 
+          message: "OpenAI API quota exceeded. Please check your billing details.", 
+          error: errorMessage 
+        });
+      }
+      
+      // Default error response
       res.status(500).json({ 
         message: "Failed to generate notes", 
-        error: error instanceof Error ? error.message : String(error) 
+        error: errorMessage
       });
     }
   });
@@ -298,9 +316,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(questions);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      // Check for specific error types
+      if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+        return res.status(429).json({ 
+          message: "OpenAI API rate limit exceeded", 
+          error: errorMessage 
+        });
+      }
+      
+      if (errorMessage.includes('quota exceeded') || errorMessage.includes('insufficient_quota')) {
+        return res.status(402).json({ 
+          message: "OpenAI API quota exceeded. Please check your billing details.", 
+          error: errorMessage 
+        });
+      }
+      
+      // Default error response
       res.status(500).json({ 
         message: "Failed to generate interview questions", 
-        error: error instanceof Error ? error.message : String(error) 
+        error: errorMessage
       });
     }
   });

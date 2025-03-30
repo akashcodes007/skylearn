@@ -109,11 +109,45 @@ export function AINotesGenerator({ onClose, onGenerate }: AINotesGeneratorProps)
       onClose();
     } catch (error) {
       console.error("Error generating notes:", error);
-      toast({
-        title: "Error generating notes",
-        description: "There was a problem generating your notes. Please try again.",
-        variant: "destructive"
-      });
+      
+      // Get detailed error message if available
+      let errorMessage = "There was a problem generating your notes. Please try again.";
+      
+      if (error instanceof Response) {
+        // Try to get error details from response
+        try {
+          const errorData = await error.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (e) {
+          // If we can't parse the JSON, use the status text
+          errorMessage = error.statusText || errorMessage;
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      // Show specific message based on error type
+      if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+        toast({
+          title: "OpenAI API Rate Limit Exceeded",
+          description: "We've hit the API rate limit. Please try again in a few minutes.",
+          variant: "destructive"
+        });
+      } else if (errorMessage.includes('quota exceeded') || errorMessage.includes('insufficient_quota')) {
+        toast({
+          title: "OpenAI API Quota Exceeded",
+          description: "The API quota has been exceeded. Please contact the administrator.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error generating notes",
+          description: errorMessage,
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsGenerating(false);
     }
