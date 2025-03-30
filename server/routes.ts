@@ -23,6 +23,9 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 
+// Note: We'll use non-null assertions (!) for req.user after authentication middleware
+// This is safe because the AuthMiddleware.ensureAuthenticated guarantees user exists
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply global middleware
   app.use(LoggingMiddleware.logRequests);
@@ -38,7 +41,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User Stats
   app.get("/api/stats", AuthMiddleware.ensureAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user!.id;
       const stats = await storage.getUserStats(userId);
       
       if (!stats) {
@@ -87,7 +90,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enrollments
   app.get("/api/enrollments", AuthMiddleware.ensureAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.id;
+      // req.user is guaranteed to exist after ensureAuthenticated middleware
+      const userId = req.user!.id;
       const enrollments = await storage.getEnrollmentsByUser(userId);
       
       // Fetch course details for each enrollment
@@ -109,7 +113,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/enrollments", AuthMiddleware.ensureAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user!.id;
       const courseId = req.body.courseId;
       
       if (!courseId) {
@@ -149,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Notes
   app.get("/api/notes", AuthMiddleware.ensureAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user!.id;
       const notes = await storage.getNotesByUser(userId);
       res.json(notes);
     } catch (error) {
@@ -162,7 +166,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/notes", AuthMiddleware.ensureAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user!.id;
       const noteData = { ...req.body, userId };
       
       // Validate note data
@@ -216,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Note not found" });
       }
       
-      if (note.userId !== req.user.id) {
+      if (note.userId !== req.user!.id) {
         return res.status(403).json({ message: "Not authorized to delete this note" });
       }
       
@@ -234,7 +238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Interviews
   app.get("/api/interviews", AuthMiddleware.ensureAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user!.id;
       const interviews = await storage.getInterviewsByUser(userId);
       res.json(interviews);
     } catch (error) {
@@ -247,7 +251,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/interviews/upcoming", AuthMiddleware.ensureAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user!.id;
       const upcomingInterviews = await storage.getUpcomingInterviews(userId);
       res.json(upcomingInterviews);
     } catch (error) {
@@ -260,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/interviews", AuthMiddleware.ensureAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user!.id;
       const interviewData = { ...req.body, userId };
       
       // Validate interview data
@@ -319,6 +323,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/tests/mcq/generate', AuthMiddleware.ensureTeacherOrAdmin, TestController.generateMCQQuestions);
   app.post('/api/tests/:id/submit/coding', AuthMiddleware.ensureAuthenticated, TestController.submitCodingTest);
   app.post('/api/tests/:id/submit/mcq', AuthMiddleware.ensureAuthenticated, TestController.submitMCQTest);
+  
+  // Simple catch-all route for the frontend (SPA)
+  // This should be added before the error handling middleware to catch non-API routes
+  app.get(['/', '/auth', '/dashboard', '/notes', '/coding', '/tests', '/interviews', '/profile'], (req, res, next) => {
+    // If we're requesting an API route, skip to the next handler
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    
+    log(`Serving frontend for route: ${req.path}`, "express");
+    next();
+  });
   
   // Error handling middleware - should be last
   app.use(ErrorMiddleware.handleNotFound);

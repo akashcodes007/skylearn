@@ -20,7 +20,7 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+      let logLine = `${req.method} ${path} [${res.statusCode}] - ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
@@ -39,22 +39,35 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  // Error handling middleware for API routes
+  app.use("/api", (err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
+    
+    log(`Error: ${message}`, "error");
     res.status(status).json({ message });
-    throw err;
   });
 
+  // Register frontend routes AFTER API routes
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   if (app.get("env") === "development") {
+    log("Setting up Vite middleware for development", "express");
     await setupVite(app, server);
   } else {
+    log("Setting up static file serving for production", "express");
     serveStatic(app);
   }
+
+  // Global error handler (for non-API routes)
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    
+    log(`Error: ${message}`, "error");
+    res.status(status).send(`<h1>Error ${status}</h1><p>${message}</p>`);
+  });
 
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.

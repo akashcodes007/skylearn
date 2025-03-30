@@ -164,8 +164,7 @@ export function Sidebar({ className }: SidebarProps) {
                 <ul>
                   {section.items.map((item, i) => (
                     <li key={i}>
-                      <Link href={item.href}>
-                        <a className={cn(
+                      <Link href={item.href} className={cn(
                           "flex items-center px-3 py-2 rounded-md mb-1 transition-colors",
                           item.active 
                             ? "text-primary bg-primary-light bg-opacity-10 font-medium" 
@@ -173,7 +172,6 @@ export function Sidebar({ className }: SidebarProps) {
                         )}>
                           {item.icon}
                           <span>{item.name}</span>
-                        </a>
                       </Link>
                     </li>
                   ))}

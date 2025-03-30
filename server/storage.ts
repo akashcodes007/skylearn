@@ -136,7 +136,13 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
+    // Set default values for required fields
+    const user: User = { 
+      ...insertUser, 
+      id,
+      role: insertUser.role || 'student',
+      avatarUrl: insertUser.avatarUrl || null
+    };
     this.users.set(id, user);
     
     // Create default user stats
@@ -174,7 +180,8 @@ export class MemStorage implements IStorage {
     const course: Course = { 
       ...insertCourse, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      coverImage: insertCourse.coverImage || null
     };
     this.courses.set(id, course);
     return course;
@@ -196,7 +203,9 @@ export class MemStorage implements IStorage {
     const enrollment: Enrollment = { 
       ...insertEnrollment, 
       id, 
-      enrolledAt: new Date() 
+      enrolledAt: new Date(),
+      // Ensure progress has a default value of 0
+      progress: insertEnrollment.progress ?? 0
     };
     this.enrollments.set(id, enrollment);
     return enrollment;
@@ -231,7 +240,8 @@ export class MemStorage implements IStorage {
     const note: Note = { 
       ...insertNote, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      tags: insertNote.tags || null
     };
     this.notes.set(id, note);
     return note;
@@ -264,7 +274,10 @@ export class MemStorage implements IStorage {
     const problem: CodingProblem = { 
       ...insertProblem, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      tags: insertProblem.tags || null,
+      boilerplateCode: insertProblem.boilerplateCode || null,
+      solutionCode: insertProblem.solutionCode || null
     };
     this.codingProblems.set(id, problem);
     return problem;
@@ -304,7 +317,9 @@ export class MemStorage implements IStorage {
     const interview: Interview = { 
       ...insertInterview, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      notes: insertInterview.notes || null,
+      isAi: insertInterview.isAi ?? true
     };
     this.interviews.set(id, interview);
     return interview;
@@ -344,7 +359,8 @@ export class MemStorage implements IStorage {
     const test: Test = { 
       ...insertTest, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      scheduledAt: insertTest.scheduledAt || null
     };
     this.tests.set(id, test);
     return test;
@@ -371,7 +387,11 @@ export class MemStorage implements IStorage {
     const stats: UserStats = { 
       ...insertStats, 
       id, 
-      lastUpdated: new Date() 
+      lastUpdated: new Date(),
+      learningHours: insertStats.learningHours ?? 0,
+      problemsSolved: insertStats.problemsSolved ?? 0,
+      testsCompleted: insertStats.testsCompleted ?? 0,
+      interviewsCompleted: insertStats.interviewsCompleted ?? 0
     };
     this.userStats.set(id, stats);
     return stats;
