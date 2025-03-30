@@ -324,20 +324,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/tests/:id/submit/coding', AuthMiddleware.ensureAuthenticated, TestController.submitCodingTest);
   app.post('/api/tests/:id/submit/mcq', AuthMiddleware.ensureAuthenticated, TestController.submitMCQTest);
   
-  // Simple catch-all route for the frontend (SPA)
-  // This should be added before the error handling middleware to catch non-API routes
-  app.get(['/', '/auth', '/dashboard', '/notes', '/coding', '/tests', '/interviews', '/profile'], (req, res, next) => {
-    // If we're requesting an API route, skip to the next handler
-    if (req.path.startsWith('/api')) {
-      return next();
-    }
-    
-    log(`Serving frontend for route: ${req.path}`, "express");
-    next();
-  });
-  
-  // Error handling middleware - should be last
-  app.use(ErrorMiddleware.handleNotFound);
+  // Remove the ErrorMiddleware.handleNotFound since it's preventing the Vite middleware from handling frontend routes
+  // We'll only keep the general error handler
   app.use(ErrorMiddleware.handleErrors);
   
   const httpServer = createServer(app);
