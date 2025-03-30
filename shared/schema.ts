@@ -86,6 +86,8 @@ export const codingProblems = pgTable("coding_problems", {
   difficulty: text("difficulty").notNull(),
   tags: text("tags").array(),
   testCases: json("test_cases").notNull(),
+  boilerplateCode: json("boilerplate_code"),
+  solutionCode: json("solution_code"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -95,6 +97,8 @@ export const insertCodingProblemSchema = createInsertSchema(codingProblems).pick
   difficulty: true,
   tags: true,
   testCases: true,
+  boilerplateCode: true,
+  solutionCode: true,
 });
 
 // Interview schema

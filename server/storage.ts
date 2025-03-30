@@ -408,29 +408,122 @@ export class MemStorage implements IStorage {
       coverImage: "interview-prep.jpg"
     });
     
-    // Sample coding problems
+    // LeetCode-style coding problems with boilerplate code
     await this.createCodingProblem({
       title: "Two Sum",
-      description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+      description: "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nYou can return the answer in any order.",
       difficulty: "Easy",
-      tags: ["Arrays", "Hash Table"],
-      testCases: JSON.parse(`[
-        {"input": {"nums": [2, 7, 11, 15], "target": 9}, "output": [0, 1]},
-        {"input": {"nums": [3, 2, 4], "target": 6}, "output": [1, 2]},
-        {"input": {"nums": [3, 3], "target": 6}, "output": [0, 1]}
-      ]`)
+      tags: ["Array", "Hash Table"],
+      testCases: JSON.stringify([
+        {
+          id: 1,
+          input: [{ name: "nums", value: [2, 7, 11, 15] }, { name: "target", value: 9 }],
+          expectedOutput: [0, 1],
+          explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]."
+        },
+        {
+          id: 2,
+          input: [{ name: "nums", value: [3, 2, 4] }, { name: "target", value: 6 }],
+          expectedOutput: [1, 2],
+          explanation: "Because nums[1] + nums[2] == 6, we return [1, 2]."
+        },
+        {
+          id: 3,
+          input: [{ name: "nums", value: [3, 3] }, { name: "target", value: 6 }],
+          expectedOutput: [0, 1],
+          explanation: "Because nums[0] + nums[1] == 6, we return [0, 1]."
+        }
+      ]),
+      boilerplateCode: JSON.stringify({
+        python: "def twoSum(nums, target):\n    \"\"\"  \n    :type nums: List[int]\n    :type target: int\n    :rtype: List[int]\n    \"\"\"\n    # Your code here\n    ",
+        javascript: "/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number[]}\n */\nvar twoSum = function(nums, target) {\n    // Your code here\n    \n};",
+        java: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Your code here\n        \n    }\n}",
+        cpp: "#include <vector>\n\nclass Solution {\npublic:\n    std::vector<int> twoSum(std::vector<int>& nums, int target) {\n        // Your code here\n        \n    }\n};"
+      }),
+      solutionCode: JSON.stringify({
+        python: "def twoSum(nums, target):\n    seen = {}\n    for i, value in enumerate(nums):\n        remaining = target - value\n        if remaining in seen:\n            return [seen[remaining], i]\n        seen[value] = i\n    return []",
+        javascript: "var twoSum = function(nums, target) {\n    const seen = {};\n    for (let i = 0; i < nums.length; i++) {\n        const remaining = target - nums[i];\n        if (remaining in seen) {\n            return [seen[remaining], i];\n        }\n        seen[nums[i]] = i;\n    }\n    return [];\n};",
+        java: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (map.containsKey(complement)) {\n                return new int[] { map.get(complement), i };\n            }\n            map.put(nums[i], i);\n        }\n        return new int[0];\n    }\n}",
+        cpp: "#include <vector>\n#include <unordered_map>\n\nclass Solution {\npublic:\n    std::vector<int> twoSum(std::vector<int>& nums, int target) {\n        std::unordered_map<int, int> seen;\n        for (int i = 0; i < nums.size(); i++) {\n            int complement = target - nums[i];\n            if (seen.count(complement)) {\n                return {seen[complement], i};\n            }\n            seen[nums[i]] = i;\n        }\n        return {};\n    }\n};"
+      })
     });
     
     await this.createCodingProblem({
-      title: "Valid Parentheses",
-      description: "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.",
+      title: "Valid Palindrome",
+      description: "A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward. Alphanumeric characters include letters and numbers.\n\nGiven a string s, return true if it is a palindrome, or false otherwise.",
       difficulty: "Easy",
-      tags: ["Stack", "String"],
-      testCases: JSON.parse(`[
-        {"input": {"s": "(){}"}, "output": true},
-        {"input": {"s": "([)]"}, "output": false},
-        {"input": {"s": "{[]}"}, "output": true}
-      ]`)
+      tags: ["String", "Two Pointers"],
+      testCases: JSON.stringify([
+        {
+          id: 1,
+          input: [{ name: "s", value: "A man, a plan, a canal: Panama" }],
+          expectedOutput: true,
+          explanation: "After removing non-alphanumeric characters and converting to lowercase, the string becomes 'amanaplanacanalpanama', which is a palindrome."
+        },
+        {
+          id: 2,
+          input: [{ name: "s", value: "race a car" }],
+          expectedOutput: false,
+          explanation: "After removing non-alphanumeric characters and converting to lowercase, the string becomes 'raceacar', which is not a palindrome."
+        },
+        {
+          id: 3,
+          input: [{ name: "s", value: " " }],
+          expectedOutput: true,
+          explanation: "After removing non-alphanumeric characters, the string becomes '', which is a palindrome."
+        }
+      ]),
+      boilerplateCode: JSON.stringify({
+        python: "def isPalindrome(s):\n    \"\"\"\n    :type s: str\n    :rtype: bool\n    \"\"\"\n    # Your code here\n    ",
+        javascript: "/**\n * @param {string} s\n * @return {boolean}\n */\nvar isPalindrome = function(s) {\n    // Your code here\n    \n};",
+        java: "class Solution {\n    public boolean isPalindrome(String s) {\n        // Your code here\n        \n    }\n}",
+        cpp: "class Solution {\npublic:\n    bool isPalindrome(string s) {\n        // Your code here\n        \n    }\n};"
+      }),
+      solutionCode: JSON.stringify({
+        python: "def isPalindrome(s):\n    # Convert to lowercase and keep only alphanumeric characters\n    s = ''.join(c for c in s.lower() if c.isalnum())\n    # Check if the string equals its reverse\n    return s == s[::-1]",
+        javascript: "var isPalindrome = function(s) {\n    // Convert to lowercase and keep only alphanumeric characters\n    s = s.toLowerCase().replace(/[^a-z0-9]/g, '');\n    // Check if the string equals its reverse\n    return s === s.split('').reverse().join('');\n};",
+        java: "class Solution {\n    public boolean isPalindrome(String s) {\n        // Convert to lowercase and keep only alphanumeric characters\n        String filtered = s.toLowerCase().replaceAll(\"[^a-z0-9]\", \"\");\n        // Check if the string equals its reverse\n        String reversed = new StringBuilder(filtered).reverse().toString();\n        return filtered.equals(reversed);\n    }\n}",
+        cpp: "class Solution {\npublic:\n    bool isPalindrome(string s) {\n        string filtered;\n        // Convert to lowercase and keep only alphanumeric characters\n        for (char c : s) {\n            if (isalnum(c)) {\n                filtered += tolower(c);\n            }\n        }\n        // Check if the string equals its reverse\n        string reversed = filtered;\n        reverse(reversed.begin(), reversed.end());\n        return filtered == reversed;\n    }\n};"
+      })
+    });
+    
+    await this.createCodingProblem({
+      title: "Maximum Subarray",
+      description: "Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.\n\nA subarray is a contiguous part of an array.",
+      difficulty: "Medium",
+      tags: ["Array", "Divide and Conquer", "Dynamic Programming"],
+      testCases: JSON.stringify([
+        {
+          id: 1,
+          input: [{ name: "nums", value: [-2, 1, -3, 4, -1, 2, 1, -5, 4] }],
+          expectedOutput: 6,
+          explanation: "The subarray [4,-1,2,1] has the largest sum 6."
+        },
+        {
+          id: 2,
+          input: [{ name: "nums", value: [1] }],
+          expectedOutput: 1,
+          explanation: "The subarray [1] has the largest sum 1."
+        },
+        {
+          id: 3,
+          input: [{ name: "nums", value: [5, 4, -1, 7, 8] }],
+          expectedOutput: 23,
+          explanation: "The subarray [5,4,-1,7,8] has the largest sum 23."
+        }
+      ]),
+      boilerplateCode: JSON.stringify({
+        python: "def maxSubArray(nums):\n    \"\"\"\n    :type nums: List[int]\n    :rtype: int\n    \"\"\"\n    # Your code here\n    ",
+        javascript: "/**\n * @param {number[]} nums\n * @return {number}\n */\nvar maxSubArray = function(nums) {\n    // Your code here\n    \n};",
+        java: "class Solution {\n    public int maxSubArray(int[] nums) {\n        // Your code here\n        \n    }\n}",
+        cpp: "class Solution {\npublic:\n    int maxSubArray(vector<int>& nums) {\n        // Your code here\n        \n    }\n};"
+      }),
+      solutionCode: JSON.stringify({
+        python: "def maxSubArray(nums):\n    # Kadane's algorithm\n    max_so_far = nums[0]\n    max_ending_here = nums[0]\n    \n    for i in range(1, len(nums)):\n        max_ending_here = max(nums[i], max_ending_here + nums[i])\n        max_so_far = max(max_so_far, max_ending_here)\n        \n    return max_so_far",
+        javascript: "var maxSubArray = function(nums) {\n    // Kadane's algorithm\n    let maxSoFar = nums[0];\n    let maxEndingHere = nums[0];\n    \n    for (let i = 1; i < nums.length; i++) {\n        maxEndingHere = Math.max(nums[i], maxEndingHere + nums[i]);\n        maxSoFar = Math.max(maxSoFar, maxEndingHere);\n    }\n    \n    return maxSoFar;\n};",
+        java: "class Solution {\n    public int maxSubArray(int[] nums) {\n        // Kadane's algorithm\n        int maxSoFar = nums[0];\n        int maxEndingHere = nums[0];\n        \n        for (int i = 1; i < nums.length; i++) {\n            maxEndingHere = Math.max(nums[i], maxEndingHere + nums[i]);\n            maxSoFar = Math.max(maxSoFar, maxEndingHere);\n        }\n        \n        return maxSoFar;\n    }\n}",
+        cpp: "class Solution {\npublic:\n    int maxSubArray(vector<int>& nums) {\n        // Kadane's algorithm\n        int maxSoFar = nums[0];\n        int maxEndingHere = nums[0];\n        \n        for (int i = 1; i < nums.size(); i++) {\n            maxEndingHere = max(nums[i], maxEndingHere + nums[i]);\n            maxSoFar = max(maxSoFar, maxEndingHere);\n        }\n        \n        return maxSoFar;\n    }\n};"
+      })
     });
     
     // Sample tests
