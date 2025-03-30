@@ -306,13 +306,37 @@ public:
                     </AccordionTrigger>
                     <AccordionContent>
                       <div className="space-y-4">
-                        {problem.testCases?.slice(0, 2).map((testCase: any, idx: number) => (
-                          <div key={idx} className="bg-muted p-3 rounded-lg font-mono text-sm">
-                            <p><span className="text-primary">Input:</span> {JSON.stringify(testCase.input)}</p>
-                            <p><span className="text-primary">Output:</span> {JSON.stringify(testCase.output)}</p>
-                            <p><span className="text-primary">Explanation:</span> Sample test case.</p>
-                          </div>
-                        ))}
+                        {(() => {
+                          try {
+                            // Parse testCases if it's a string
+                            const testCasesArray = typeof problem.testCases === 'string' 
+                              ? JSON.parse(problem.testCases) 
+                              : problem.testCases || [];
+
+                            return Array.isArray(testCasesArray) && testCasesArray.slice(0, 2).map((testCase: any, idx: number) => (
+                              <div key={idx} className="bg-muted p-3 rounded-lg font-mono text-sm">
+                                <p><span className="text-primary">Input:</span> {
+                                  testCase.input ? JSON.stringify(testCase.input) : 
+                                  testCase.expectedOutput ? 'Input data' : 'Sample input'
+                                }</p>
+                                <p><span className="text-primary">Output:</span> {
+                                  testCase.output ? JSON.stringify(testCase.output) : 
+                                  testCase.expectedOutput ? JSON.stringify(testCase.expectedOutput) : 'Sample output'
+                                }</p>
+                                <p><span className="text-primary">Explanation:</span> {
+                                  testCase.explanation || 'Sample test case.'
+                                }</p>
+                              </div>
+                            ));
+                          } catch (error) {
+                            console.error("Error parsing test cases:", error);
+                            return (
+                              <div className="bg-muted p-3 rounded-lg">
+                                <p>Sample test cases will be displayed here.</p>
+                              </div>
+                            );
+                          }
+                        })()}
                       </div>
                     </AccordionContent>
                   </AccordionItem>
